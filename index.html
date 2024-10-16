@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merger</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Merger</h1>
+        <input type="file" id="pdfInput" accept=".pdf" multiple>
+        <button id="uploadButton">Upload PDFs</button>
+        <ul id="pdfList"></ul>
+        <button id="mergeButton" disabled>Merge PDFs</button>
+    </div>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7/download.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
