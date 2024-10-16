@@ -12,7 +12,7 @@ A simple client-side web application that allows users to upload multiple PDF fi
 
 ## Demo
 
-![PDF Merger Demo](path/to/demo-screenshot.png) <!-- Replace with the path to your demo screenshot -->
+[https://merge-multiple-pdfs-client.netlify.app/](https://merge-multiple-pdfs-client.netlify.app/)
 
 ## Technologies Used
 
