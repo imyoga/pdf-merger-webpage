@@ -9,8 +9,8 @@ uploadButton.addEventListener('click', () => pdfInput.click());
 
 pdfInput.addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
-    if (pdfs.length + files.length > 10) {
-        alert('You can only upload up to 10 PDFs');
+    if (pdfs.length + files.length > 15) {
+        alert('You can only upload up to 15 PDFs');
         return;
     }
     
