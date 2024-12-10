@@ -5,17 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Merger</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <h1>PDF Merger</h1>
-        <input type="file" id="pdfInput" accept=".pdf" multiple>
-        <button id="uploadButton">Upload PDFs</button>
+        
+        <div class="upload-area" id="dropZone">
+            <p><i class="fas fa-file-pdf fa-2x"></i></p>
+            <p>Drag & Drop PDF files here</p>
+            <p>or</p>
+            <button id="uploadButton">Choose Files</button>
+            <input type="file" id="pdfInput" accept=".pdf" multiple>
+        </div>
+
+        <div class="sort-buttons">
+            <button id="sortAsc"><i class="fas fa-sort-alpha-down"></i> Sort A-Z</button>
+            <button id="sortDesc"><i class="fas fa-sort-alpha-up"></i> Sort Z-A</button>
+            <button id="addMore"><i class="fas fa-plus"></i> Add More Files</button>
+            <button id="resetAll"><i class="fas fa-redo"></i> Reset All</button>
+        </div>
+
         <ul id="pdfList"></ul>
-        <button id="mergeButton" disabled>Merge PDFs</button>
+        
+        <div class="button-group">
+            <button id="mergeButton" disabled><i class="fas fa-object-group"></i> Merge PDFs</button>
+        </div>
     </div>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="index.js"></script>
 </body>
 </html>

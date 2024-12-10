@@ -1,67 +1,172 @@
 body {
-	font-family: Arial, sans-serif;
-	line-height: 1.6;
-	margin: 0;
-	padding: 0;
-	background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
 }
 
 .container {
-	width: 80%;
-	margin: auto;
-	overflow: hidden;
-	padding: 20px;
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px;
 }
 
 h1 {
-	color: #333;
-	text-align: center;
+    color: #90EE90;
+    text-align: center;
+}
+
+.upload-area {
+    border: 2px dashed #90EE90;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    margin: 20px 0;
+    background-color: #2a2a2a;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area.dragover {
+    background-color: #3a3a3a;
+    border-color: #98FB98;
+}
+
+.upload-area p {
+    margin: 0;
+    font-size: 1.2em;
+    color: #90EE90;
 }
 
 input[type="file"] {
-	display: none;
+    display: none;
 }
 
 button {
-	display: block;
-	width: 200px;
-	padding: 10px;
-	margin: 20px auto;
-	background-color: #4CAF50;
-	color: white;
-	border: none;
-	cursor: pointer;
-	font-size: 16px;
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:active {
+    transform: scale(0.97);
 }
 
 button:disabled {
-	background-color: #cccccc;
-	cursor: not-allowed;
+    background-color: #404040;
+    cursor: not-allowed;
+}
+
+.button-group {
+    text-align: center;
+    margin: 20px 0;
 }
 
 ul {
-	list-style-type: none;
-	padding: 0;
+    list-style-type: none;
+    padding: 0;
 }
 
 li {
-	background-color: #fff;
-	margin-bottom: 10px;
-	padding: 10px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+    background-color: #2a2a2a;
+    margin-bottom: 5px;
+    padding: 8px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+    cursor: move;
+    transition: background-color 0.1s ease;
+    font-size: 14px;
+}
+
+li:nth-child(even) {
+    background-color: #333333;
+}
+
+li:hover {
+    background-color: #3a3a3a;
+}
+
+li.dragging {
+    opacity: 0.5;
+    background-color: #3a3a3a;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-number {
+    min-width: 24px;
+    color: #90EE90;
+    font-weight: bold;
+}
+
+.file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.remove-file {
+    color: #ff4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+}
+
+.remove-file:hover {
+    color: #ff0000;
+}
+
+.sort-buttons {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.sort-buttons button {
+    background-color: #2a2a2a;
+    margin: 0 5px;
+}
+
+.sort-buttons button:hover {
+    background-color: #3a3a3a;
 }
 
 .move-buttons {
-	display: flex;
-	gap: 5px;
+    display: flex;
+    gap: 5px;
 }
 
 .move-buttons button {
-	width: auto;
-	margin: 0;
-	padding: 5px 10px;
-	font-size: 14px;
+    width: auto;
+    margin: 0;
+    padding: 5px 10px;
+    font-size: 14px;
 }
-
