@@ -1,153 +1,207 @@
-let pdfFiles = [];
-const dropZone = document.getElementById('dropZone');
-const pdfInput = document.getElementById('pdfInput');
-const uploadButton = document.getElementById('uploadButton');
-const pdfList = document.getElementById('pdfList');
-const mergeButton = document.getElementById('mergeButton');
-const sortAscButton = document.getElementById('sortAsc');
-const sortDescButton = document.getElementById('sortDesc');
-const addMoreButton = document.getElementById('addMore');
-const resetAllButton = document.getElementById('resetAll');
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const pdfInput = document.getElementById('pdfInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const pdfList = document.getElementById('pdfList');
+    const mergeButton = document.getElementById('mergeButton');
+    const controlsSection = document.getElementById('controlsSection');
+    const fileNameInput = document.getElementById('fileNameInput');
+    const sortAscButton = document.getElementById('sortAsc');
+    const sortDescButton = document.getElementById('sortDesc');
+    const addMoreButton = document.getElementById('addMore');
+    const resetAllButton = document.getElementById('resetAll');
 
-// Initialize Sortable
-new Sortable(pdfList, {
-    animation: 150,
-    ghostClass: 'dragging',
-    onEnd: updateRowNumbers
-});
+    let pdfs = [];
 
-// Drag and drop handlers
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('dragover');
-});
-
-dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('dragover');
-});
-
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
-    handleFiles(files);
-});
-
-// File input handlers
-uploadButton.addEventListener('click', () => pdfInput.click());
-addMoreButton.addEventListener('click', () => pdfInput.click());
-
-pdfInput.addEventListener('change', (e) => {
-    const files = Array.from(e.target.files);
-    handleFiles(files);
-    pdfInput.value = ''; // Reset input
-});
-
-// Sort handlers
-sortAscButton.addEventListener('click', () => sortFiles('asc'));
-sortDescButton.addEventListener('click', () => sortFiles('desc'));
-
-// Reset handler
-resetAllButton.addEventListener('click', () => {
-    pdfFiles = [];
-    pdfList.innerHTML = '';
-    updateMergeButton();
-    updateRowNumbers();
-});
-
-function handleFiles(files) {
-    files.forEach(file => {
-        if (file.type === 'application/pdf') {
-            pdfFiles.push(file);
-            addFileToList(file);
+    // Initialize Sortable
+    new Sortable(pdfList, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'dragging',
+        onStart: function() {
+            document.body.style.cursor = 'grabbing';
+        },
+        onEnd: function(evt) {
+            document.body.style.cursor = 'default';
+            // Update the pdfs array to match the new order
+            const item = pdfs[evt.oldIndex];
+            pdfs.splice(evt.oldIndex, 1);
+            pdfs.splice(evt.newIndex, 0, item);
+            updatePDFList();
         }
     });
-    updateMergeButton();
-}
 
-function addFileToList(file) {
-    const li = document.createElement('li');
-    li.innerHTML = `
-        <div class="file-info">
-            <span class="file-number"></span>
-            <i class="fas fa-file-pdf"></i>
-            <span class="file-name">${file.name}</span>
-        </div>
-        <div class="file-actions">
-            <button class="remove-file" onclick="removeFile(this)" data-filename="${file.name}">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
-    pdfList.appendChild(li);
-    updateRowNumbers();
-}
-
-function removeFile(button) {
-    const filename = button.getAttribute('data-filename');
-    pdfFiles = pdfFiles.filter(file => file.name !== filename);
-    button.closest('li').remove();
-    updateRowNumbers();
-    updateMergeButton();
-}
-
-function sortFiles(direction) {
-    const items = Array.from(pdfList.children);
-    items.sort((a, b) => {
-        const aText = a.querySelector('.file-name').textContent;
-        const bText = b.querySelector('.file-name').textContent;
-        return direction === 'asc' ? 
-            aText.localeCompare(bText) : 
-            bText.localeCompare(aText);
+    // Drag and drop handlers
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('dragover');
     });
-    
-    // Update DOM
-    items.forEach(item => pdfList.appendChild(item));
-    
-    // Update pdfFiles array to match new order
-    pdfFiles = items.map(item => {
-        const filename = item.querySelector('.file-name').textContent;
-        return pdfFiles.find(file => file.name === filename);
-    });
-    
-    updateRowNumbers();
-}
 
-function updateRowNumbers() {
-    const items = Array.from(pdfList.children);
-    items.forEach((item, index) => {
-        const numberSpan = item.querySelector('.file-number');
-        numberSpan.textContent = `${index + 1}.`;
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('dragover');
     });
-}
 
-mergeButton.addEventListener('click', async () => {
-    try {
-        mergeButton.disabled = true;
-        mergeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merging...';
-        
-        const mergedPdf = await PDFLib.PDFDocument.create();
-        
-        for (const file of pdfFiles) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
-            const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-            pages.forEach(page => mergedPdf.addPage(page));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
+        handleFiles(files);
+    });
+
+    // Click to upload
+    uploadButton.addEventListener('click', () => {
+        pdfInput.click();
+    });
+
+    pdfInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+        pdfInput.value = ''; // Reset input for same file selection
+    });
+
+    function getUniqueFileName(fileName) {
+        // Remove .pdf extension
+        const baseName = fileName.slice(0, -4);
+        const extension = '.pdf';
+        let copyNumber = 1;
+        let newName = fileName;
+
+        // Check if the name already ends with (copy X)
+        const copyMatch = baseName.match(/^(.*?)(?: \(copy (\d+)\))?$/);
+        const originalName = copyMatch[1];
+        const existingCopyNumber = copyMatch[2] ? parseInt(copyMatch[2]) : null;
+
+        // Function to generate name with copy number
+        const generateName = (name, num) => `${name} (copy ${num})${extension}`;
+
+        // If this is already a copy, start checking from the next number
+        if (existingCopyNumber !== null) {
+            copyNumber = existingCopyNumber + 1;
+            newName = generateName(originalName, copyNumber);
         }
-        
-        const mergedPdfFile = await mergedPdf.save();
-        download(mergedPdfFile, "merged.pdf", "application/pdf");
-        
-        mergeButton.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
-        mergeButton.disabled = false;
-    } catch (error) {
-        console.error('Error merging PDFs:', error);
-        mergeButton.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
-        mergeButton.disabled = false;
-        alert('Error merging PDFs. Please try again.');
+
+        // Keep incrementing copy number until we find a unique name
+        while (pdfs.some(pdf => pdf.name === newName)) {
+            if (existingCopyNumber === null && copyNumber === 1) {
+                // First copy of an original file
+                newName = generateName(baseName, copyNumber);
+            } else {
+                // Increment copy number until we find a unique name
+                newName = generateName(originalName, copyNumber);
+            }
+            copyNumber++;
+        }
+
+        return newName;
     }
-});
 
-function updateMergeButton() {
-    mergeButton.disabled = pdfFiles.length < 2;
-}
+    function handleFiles(files) {
+        if (files.length === 0) return;
+
+        files.forEach(file => {
+            if (file.type === 'application/pdf') {
+                let uniqueFile = new File([file], getUniqueFileName(file.name), {
+                    type: file.type,
+                    lastModified: file.lastModified
+                });
+                pdfs.push(uniqueFile);
+            }
+        });
+
+        updatePDFList();
+        updateControlsVisibility();
+    }
+
+    function updateControlsVisibility() {
+        if (pdfs.length > 0) {
+            controlsSection.classList.remove('hidden');
+            mergeButton.disabled = false;
+        } else {
+            controlsSection.classList.add('hidden');
+            mergeButton.disabled = true;
+        }
+    }
+
+    function updatePDFList() {
+        pdfList.innerHTML = '';
+        pdfs.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="file-info">
+                    <span class="file-number">${index + 1}.</span>
+                    <i class="fas fa-file-pdf"></i>
+                    <span class="file-name">${file.name}</span>
+                </div>
+                <button onclick="removePDF(${index})" class="remove-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            pdfList.appendChild(li);
+        });
+    }
+
+    // Remove PDF function
+    window.removePDF = function(index) {
+        pdfs.splice(index, 1);
+        updatePDFList();
+        updateControlsVisibility();
+    };
+
+    // Sort handlers
+    sortAscButton.addEventListener('click', () => {
+        pdfs.sort((a, b) => a.name.localeCompare(b.name));
+        updatePDFList();
+    });
+
+    sortDescButton.addEventListener('click', () => {
+        pdfs.sort((a, b) => b.name.localeCompare(a.name));
+        updatePDFList();
+    });
+
+    // Add more files
+    addMoreButton.addEventListener('click', () => {
+        pdfInput.click();
+    });
+
+    // Reset all
+    resetAllButton.addEventListener('click', () => {
+        pdfs = [];
+        updatePDFList();
+        updateControlsVisibility();
+        fileNameInput.value = 'merged';
+    });
+
+    // Merge PDFs
+    mergeButton.addEventListener('click', async () => {
+        if (pdfs.length === 0) return;
+
+        try {
+            mergeButton.disabled = true;
+            mergeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merging...';
+
+            const mergedPdf = await PDFLib.PDFDocument.create();
+            
+            for (const pdf of pdfs) {
+                const pdfBytes = await pdf.arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+                const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            }
+
+            const mergedPdfFile = await mergedPdf.save();
+            download(mergedPdfFile, `${fileNameInput.value}.pdf`, "application/pdf");
+            
+            mergeButton.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
+            mergeButton.disabled = false;
+        } catch (error) {
+            console.error('Error merging PDFs:', error);
+            mergeButton.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
+            mergeButton.disabled = false;
+            alert('Error merging PDFs. Please try again.');
+        }
+    });
+});

@@ -11,25 +11,41 @@
     <div class="container">
         <h1>PDF Merger</h1>
         
-        <div class="upload-area" id="dropZone">
-            <p><i class="fas fa-file-pdf fa-2x"></i></p>
-            <p>Drag & Drop PDF files here</p>
-            <p>or</p>
-            <button id="uploadButton">Choose Files</button>
-            <input type="file" id="pdfInput" accept=".pdf" multiple>
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-area" id="dropZone">
+                    <p><i class="fas fa-file-pdf fa-2x"></i></p>
+                    <p>Drag & Drop PDF files here</p>
+                    <p>or</p>
+                    <button id="uploadButton">Choose Files</button>
+                    <input type="file" id="pdfInput" accept=".pdf" multiple>
+                </div>
+            </div>
+
+            <div class="controls-section hidden" id="controlsSection">
+                <div class="button-pairs">
+                    <div class="sort-buttons">
+                        <button id="sortAsc"><i class="fas fa-sort-alpha-down"></i> Sort A-Z</button>
+                        <button id="sortDesc"><i class="fas fa-sort-alpha-up"></i> Sort Z-A</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="addMore"><i class="fas fa-plus"></i> Add More Files</button>
+                        <button id="resetAll"><i class="fas fa-redo"></i> Reset All</button>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <div class="filename-input-group">
+                        <label for="fileNameInput">Output filename:</label>
+                        <input type="text" id="fileNameInput" value="merged" placeholder="Enter filename">
+                    </div>
+                    <button id="mergeButton" disabled><i class="fas fa-object-group"></i> Merge PDFs</button>
+                </div>
+            </div>
         </div>
 
-        <div class="sort-buttons">
-            <button id="sortAsc"><i class="fas fa-sort-alpha-down"></i> Sort A-Z</button>
-            <button id="sortDesc"><i class="fas fa-sort-alpha-up"></i> Sort Z-A</button>
-            <button id="addMore"><i class="fas fa-plus"></i> Add More Files</button>
-            <button id="resetAll"><i class="fas fa-redo"></i> Reset All</button>
-        </div>
-
-        <ul id="pdfList"></ul>
-        
-        <div class="button-group">
-            <button id="mergeButton" disabled><i class="fas fa-object-group"></i> Merge PDFs</button>
+        <div class="pdf-list-container">
+            <ul id="pdfList"></ul>
         </div>
     </div>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
