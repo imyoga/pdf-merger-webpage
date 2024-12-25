@@ -15,9 +15,12 @@
             <div class="upload-section">
                 <div class="upload-area" id="dropZone">
                     <p><i class="fas fa-file-pdf fa-2x"></i></p>
-                    <p>Drag & Drop PDF files here</p>
-                    <p>or</p>
-                    <button id="uploadButton">Choose Files</button>
+                    <p class="initial-text">Drag & Drop PDF files here</p>
+                    <p class="after-upload-text hidden">Drag & drop files to add more files</p>
+                    <p class="initial-text">or</p>
+                    <p class="after-upload-text hidden">or</p>
+                    <button id="initialUploadButton" class="initial-text">Choose Files</button>
+                    <button id="additionalUploadButton" class="after-upload-text hidden">Add more files</button>
                     <input type="file" id="pdfInput" accept=".pdf" multiple>
                 </div>
             </div>

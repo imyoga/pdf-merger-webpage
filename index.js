@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const dropZone = document.getElementById('dropZone');
     const pdfInput = document.getElementById('pdfInput');
-    const uploadButton = document.getElementById('uploadButton');
+    const initialUploadButton = document.getElementById('initialUploadButton');
+    const additionalUploadButton = document.getElementById('additionalUploadButton');
     const pdfList = document.getElementById('pdfList');
     const mergeButton = document.getElementById('mergeButton');
     const controlsSection = document.getElementById('controlsSection');
@@ -52,8 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
         handleFiles(files);
     });
 
-    // Click to upload
-    uploadButton.addEventListener('click', () => {
+    // Click to upload handlers
+    initialUploadButton.addEventListener('click', () => {
+        pdfInput.click();
+    });
+
+    additionalUploadButton.addEventListener('click', () => {
         pdfInput.click();
     });
 
@@ -120,9 +125,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (pdfs.length > 0) {
             controlsSection.classList.remove('hidden');
             mergeButton.disabled = false;
+            dropZone.classList.add('files-added');
+            
+            // Update text visibility
+            document.querySelectorAll('.initial-text').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.after-upload-text').forEach(el => el.classList.remove('hidden'));
         } else {
             controlsSection.classList.add('hidden');
             mergeButton.disabled = true;
+            dropZone.classList.remove('files-added');
+            
+            // Reset text visibility
+            document.querySelectorAll('.initial-text').forEach(el => el.classList.remove('hidden'));
+            document.querySelectorAll('.after-upload-text').forEach(el => el.classList.add('hidden'));
         }
     }
 
@@ -179,17 +194,39 @@ document.addEventListener('DOMContentLoaded', function() {
     mergeButton.addEventListener('click', async () => {
         if (pdfs.length === 0) return;
 
-        try {
-            mergeButton.disabled = true;
-            mergeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merging...';
+        mergeButton.disabled = true;
+        mergeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merging...';
 
+        // Calculate total size
+        const totalSize = pdfs.reduce((sum, file) => sum + file.size, 0);
+        const MAX_SIZE = 100 * 1024 * 1024; // 100MB limit
+
+        if (totalSize > MAX_SIZE) {
+            alert('Total PDF size exceeds 100MB. Please try with smaller files or fewer PDFs.');
+            mergeButton.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
+            mergeButton.disabled = false;
+            return;
+        }
+
+        try {
             const mergedPdf = await PDFLib.PDFDocument.create();
+            const totalFiles = pdfs.length;
             
-            for (const pdf of pdfs) {
-                const pdfBytes = await pdf.arrayBuffer();
-                const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-                const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
-                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            for (let i = 0; i < pdfs.length; i++) {
+                const pdf = pdfs[i];
+                try {
+                    const pdfBytes = await pdf.arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+                    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                    copiedPages.forEach((page) => mergedPdf.addPage(page));
+                    
+                    // Update progress
+                    const progress = Math.round(((i + 1) / totalFiles) * 100);
+                    mergeButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Merging... ${progress}%`;
+                } catch (fileError) {
+                    console.error(`Error processing ${pdf.name}:`, fileError);
+                    throw new Error(`Failed to process ${pdf.name}. The file might be corrupted or password protected.`);
+                }
             }
 
             const mergedPdfFile = await mergedPdf.save();
@@ -199,9 +236,9 @@ document.addEventListener('DOMContentLoaded', function() {
             mergeButton.disabled = false;
         } catch (error) {
             console.error('Error merging PDFs:', error);
+            alert(`Error merging PDFs: ${error.message}`);
             mergeButton.innerHTML = '<i class="fas fa-object-group"></i> Merge PDFs';
             mergeButton.disabled = false;
-            alert('Error merging PDFs. Please try again.');
         }
     });
 });
